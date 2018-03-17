@@ -1,0 +1,13 @@
+Package: FunRegPoI
+Type: Package
+Title: Functional Linear Regression with Points of Impact
+Version: 1.2
+Date: 2017-07-21
+Author: Dominik Liebl [aut], Stefan Rameseder [aut], Christoph Rust [aut , cre]
+Maintainer: Christoph Rust <christoph.rust@ur.de>
+Description: This package implements different estimators for the functional linear regression model with points of impact (Kneip, Poss, Sarda, 2016). In particular, it also covers the estimation procedure incorporating a smoothing spline approach, developed in Liebl, Rameseder, Rust (2017).
+License: GPL-2
+Depends: R (>= 3.1.0) , splines , leaps
+NeedsCompilation: no
+Packaged: 2017-08-21 12:52:03 UTC; cgr
+RoxygenNote: 6.0.1
