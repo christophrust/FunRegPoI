@@ -117,7 +117,7 @@ summary.FunRegPoI <- function(object, confidence.level = 0.95,...){
     
 
         ## beta curve confidence interval
-        q.norm <-  pnorm(1-0.5 + confidence.level/2 )
+        q.norm <-  pnorm(1-(1- confidence.level)/2 )
         confint.beta <- cbind(lower = estBeta - q.norm * coef.serr.ptw[1:length(estBeta)],
                           upper = estBeta + q.norm * coef.serr.ptw[1:length(estBeta)])
 

@@ -25,7 +25,7 @@ function(Y, X_mat, grd, add.vars, maxPoI = 8 ,threshold_cpv=0.95, estOrder = NUL
         })
         
         bics <- lapply(KnePosSarcomResults , function(x) x$BIC)
-        opt  <- which.min(bics)
+        opt  <- which.min(unlist(bics))
         optEntry <- KnePosSarcomResults[[opt]]
         
     } else {

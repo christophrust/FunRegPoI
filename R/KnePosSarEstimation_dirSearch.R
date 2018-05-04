@@ -66,12 +66,35 @@ function(Y, X_mat, add.vars, k, grd, dom, threshold_cpv = 0.95, plotting = FALSE
         
         ## A directed S search over all number of S and all number of K up to maxK
         ## For each K generate a list of all BICs per s in S
-        BICs <- lapply(0:maxK, function(k) { sapply(0:maxS, function(s) calcPoIandScoreLM(estDataFrame = estDataFrame, s = s, k = k, K = maxK, S = maxS)$BIC)})
-        
+
+        ## BICs <- lapply(0:maxK, function(k) { sapply(0:maxS, function(s) calcPoIandScoreLM(estDataFrame = estDataFrame, s = s, k = k, K = maxK, S = maxS)$BIC)})
+        ## way faster:
+        BICs <- lapply(0:maxK , function(k){
+            vapply( 0:maxS, function(s) {
+                if (k==0){
+                    if (s==0){
+                        y <- estDataFrame[,1]
+                        n <- length(y)
+                        RSS <- sum(y^2)
+                        return(n * log(RSS/n))  # here: edf = 0
+                    } else {
+                        lmEst <- lm.fit(y = estDataFrame[,1], x = as.matrix(estDataFrame[, c((maxK+2):(maxK+s+1))]))
+                    }
+                } else {
+                    if (s==0) {
+                        lmEst <- lm.fit(y = estDataFrame[,1], x = as.matrix(estDataFrame[, 2:(k+1) ]))
+                    } else {
+                        lmEst <- lm.fit(y = estDataFrame[,1], x = as.matrix(estDataFrame[, c(2:(k+1),(maxK+2):(maxK+s+1))]))
+                    }
+                }
+                calcBIClm(lmEst)[2]
+            }, 0)
+        })
+
         ## Generate for each k optimal included 
         BICs_per_k <- cbind(K_ind = 0:maxK, t(sapply(BICs, function(bic_k) return(list(S_ind = which.min(bic_k), K_BIC = min(bic_k))))))
         optSoptK   <- BICs_per_k[  which.min(BICs_per_k[ , "K_BIC"]) , c("K_ind", "S_ind", "K_BIC")]
-        BICChoice  <- optSoptK["K_BIC"]
+        BICChoice  <- unlist(optSoptK)["K_BIC"]
         S_choice   <- (0:maxS)[ optSoptK[["S_ind"]] ] 		# If optSoptK["S_ind"]=1 --> (0:maxS)[ (optSoptK[["S_ind"]]) ] = 0 -> adjustment
         K_choice   <- (0:maxK)[ (optSoptK[["K_ind"]]+1) ] 	# K_choice = 3
     } else {
@@ -104,7 +127,7 @@ function(Y, X_mat, add.vars, k, grd, dom, threshold_cpv = 0.95, plotting = FALSE
     beta_hat   <- calcScoreBetaFun(ef = estEF, coefs = estPsi, p=p)
     if (S_choice > 0) {
         ## Y_i = integral X_i(t) beta_hat(t) dt + sum_k beta_hat_k * X_i(tau_hat_k)
-        Y_hat  <- (X_c %*% beta_hat(grd))/ p + X_c[, PoIChoice ,drop=FALSE] %*% estPoI 
+        Y_hat  <- (X_c %*% beta_hat(grd))/ p + X_c[, PoIChoice ,drop=FALSE] %*% estPoI
         
     } else {
         Y_hat  <- (X_c %*% beta_hat(grd))/ p
