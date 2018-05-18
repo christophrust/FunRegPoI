@@ -59,7 +59,7 @@ print.FunRegPoI <-function(x , ...){
         cat("Selected rho: ")
         cat(format(x$model$rho , digits = 5))
         cat("\nPossible range for rho: ")
-        cat(paste0("[",x$model$rho_space[1] , "," , x$model$rho_space[2], "]"))
+        cat(paste0("[",x$model$rho_rng[1] , "," , x$model$rho_rng[2], "]"))
         cat("\nValue of GCV: ")
         cat(format(x$model$gcv , digits = 3))
         cat("\n")

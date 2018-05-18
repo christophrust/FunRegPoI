@@ -117,7 +117,7 @@ function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
     ## Get Optima of via BIC, BIC_sqHat, GCV
     optimum         <- which.min(sapply(res, function(x) x$BIC))
     ## Choose the best (acc. to BIC_sqHat) and save it as "opt_BIC_sqHat"
-    optimum_sqHat   <- which.min(sapply(res, function(x) x$BIC_sqHat))
+    optimum_BIC_sqHat   <- which.min(sapply(res, function(x) x$BIC_sqHat))
     ## Choose the best (acc. to gcv) and save it as "opt_gcv"
     optimum_gcv     <- which.min(sapply(res, function(x) x$gcv))
     
@@ -130,10 +130,10 @@ function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
         exPostOptimum_gcv       <- which.min(sapply(res, function(x) x[["exPostEstimation"]]$gcv))
     }
     ## Save everything
-    res[["opt"]]                <- list(res[[optimum]], X = X_mat,Y = Y)
-    names(res[["opt"]])         <- c("res", "X", "Y")
-    res[["opt_BIC_sqHat"]]      <- res[[optimum_sqHat]][1:12]
-    res[["opt_gcv"]]            <- res[[optimum_gcv]][1:12]
+    res[["optimum"]]                <- list(res[[optimum]], X = X_mat,Y = Y)
+    names(res[["optimum"]])         <- c("res", "X", "Y")
+    res[["optimum_BIC_sqHat"]]      <- res[[optimum_BIC_sqHat]][1:14]
+    res[["optimum_gcv"]]            <- res[[optimum_gcv]][1:14]
     if (exPost){
         res[["exPostOptimum"]]            <- res[[exPostOptimum]][["exPostEstimation"]]
         res[["exPostOptimum_BIC_sqHat"]]  <- res[[exPostOptimum_BIC_sqHat]][["exPostEstimation"]]
@@ -142,9 +142,9 @@ function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
 
     ## #########################################################################################
     ## build the object
-    opt <- paste0( if(exPost) "exPostOptimum" else "opt" , if(opt.crit=="BIC") "" else paste0("_",opt.crit))    
+    opt <- paste0( if(exPost) "exPostOptimum" else "optimum" , if(opt.crit=="BIC") "" else paste0("_",opt.crit))    
     optInd    <- get(opt)
-    optEntry  <- if(opt=="opt") res[[opt]]$res else res[[opt]]
+    optEntry  <- if(opt=="optimum") res[[opt]]$res else res[[opt]]
     betaCurve <- drop(optEntry$estBeta)
 
 
