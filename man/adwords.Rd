@@ -17,7 +17,8 @@
 }
 \source{Crealytics GmbH.}
 \references{
-  Liebl, D., Rameseder, S., Rust, C. (2017) Functional Insights into
-  Google Adwords. Available from the authors on request.
+  Liebl, D., Rameseder, S., Rust, C. (2018) Improving Estimation in
+  Functional Linear Regression with Points of Impact: Insights into
+  Google AdWords.
 }
 \keyword{datasets}

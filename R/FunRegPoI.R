@@ -89,9 +89,10 @@
 #' Kneip A., Poss, D., Sarda, P. (2016) Functional Linear
 #' Regression with Points of Impact. The Annals of Statistics, \emph{44}(1), 1-30.
 #'
-#' Liebl, D., Rameseder, S., Rust, C. (2017) Functional Insights into
-#' Google Adwords. Available from the authors on request.
-#'
+#' Liebl, D., Rameseder, S., Rust, C. (2018) Improving Estimation in
+#'  Functional Linear Regression with Points of Impact: Insights into
+#'  Google AdWords. Available at www.dliebl.com/files/Liebl_Rameseder_Rust_2017.pdf
+#' 
 #' @author Dominik Liebl, Stefan Rameseder and Christoph Rust
 #'
 #' @note
