@@ -1,9 +1,9 @@
-CraKneSaPoIEst <-
-function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
+CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
                            k_seq = 1:floor(length(grd)/6), rho_rng = c(1e-6,2e2),
                            estOrder = "R2" , searchMethod = "dirSearch" , nbest=1 ,
-                           intercept =FALSE , opt.crit = "BIC_sqHat", exPost = TRUE, center = TRUE , ...) {
-
+                           intercept =FALSE , opt.crit = "BIC_sqHat", exPost = TRUE,
+                           maxStepsES = 3, center = TRUE , ...) {
+    
     ## ###########################################
     ## A Function caluclating the PESES estimator
     ## Input:
@@ -76,35 +76,93 @@ function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
         BICandEstimates[["cor"]]      <- cor
         BICandEstimates[["k"]]        <- k_seq[k_c]
         BICandEstimates[["delta"]]    <- possible_deltas[k_c]
-        
+        BICandEstimates[["nStepsES"]] <- 1
         return(BICandEstimates)
     }) # End of for all k /  deltas save <- res[[r]] 
     names(res)       <- possible_deltas
     
     ## Ex Post Estimation
+    ## 2018-11-05: arbitrary repetition of ES step added
     if (exPost){
         if (center){
             exPostEstimation   <- lapply(res, function(entry) {
                 if (estOrder == "R1") {
-                    estBetaAndPoI_R1_centered(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
-                                              rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
-                                              nbest = nbest, intercept = intercept, plotting = FALSE)
+                    nStepsES <- entry[["nStepsES"]]
+                    
+                    while (nStepsES < maxStepsES){
+                        
+                        CurSetPotPoI <- entry[["estTauGrd"]]
+                        
+                        entry <- estBetaAndPoI_R1_centered(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
+                                                           rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
+                                                           nbest = nbest, intercept = intercept, plotting = FALSE)
+                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                            ## then additional ES step has nothing changed
+                            return(entry)
+                        }
+                        nStepsES <- nStepsES + 1
+                        entry[["nStepsES"]] <- nStepsES
+                        oEntry <- entry
+                    }
+                    return(entry)
+                    
                 } else {
-                    estBetaAndPoI_R2_centered(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
-                                              rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
-                                              nbest = nbest, intercept = intercept, plotting = FALSE)
+                    nStepsES <- entry[["nStepsES"]]
+                    
+                    while (nStepsES < maxStepsES){
+                        
+                        CurSetPotPoI <- entry[["estTauGrd"]]
+                        entry <- estBetaAndPoI_R2_centered(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
+                                                           rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
+                                                           nbest = nbest, intercept = intercept, plotting = FALSE)
+                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                            ## then additional ES step has nothing changed
+                            return(entry)
+                        }
+                        nStepsES <- nStepsES + 1
+                        entry[["nStepsES"]] <- nStepsES
+                    }
+                    return(entry)
                 }
             })
         }else{
             exPostEstimation   <- lapply(res, function(entry) {
                 if (estOrder == "R1") {
-                    estBetaAndPoI_R1(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
-                                     rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
-                                     nbest = nbest, intercept = intercept, plotting = FALSE)
+                    nStepsES <- entry[["nStepsES"]]
+                    
+                    while (nStepsES < maxStepsES){
+                        
+                        CurSetPotPoI <- entry[["estTauGrd"]]
+                        entry <- estBetaAndPoI_R1(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
+                                                  rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
+                                                  nbest = nbest, intercept = intercept, plotting = FALSE)
+                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                            ## then additional ES step has nothing changed
+                            return(entry)
+                        }
+                        nStepsES <- nStepsES + 1
+                        entry[["nStepsES"]] <- nStepsES
+                    }
+                    return(entry)
+                    
                 } else {
-                    estBetaAndPoI_R2(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
-                                     rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
-                                     nbest = nbest, intercept = intercept, plotting = FALSE)
+                    nStepsES <- entry[["nStepsES"]]
+                    
+                    while (nStepsES < maxStepsES){
+                        
+                        CurSetPotPoI <- entry[["estTauGrd"]]
+                        entry <- estBetaAndPoI_R2(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
+                                                  rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
+                                                  nbest = nbest, intercept = intercept, plotting = FALSE)
+                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                            ## then additional ES step has nothing changed
+                            return(entry)
+                        }
+                        nStepsES <- nStepsES + 1
+                        entry[["nStepsES"]] <- nStepsES
+                    }
+                    return(entry)
+                    
                 }
             })
         }
@@ -112,7 +170,7 @@ function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
         for( delta in possible_deltas){ # delta <- possible_deltas[1]
             delta_c <- which(delta == possible_deltas)
             res[[delta_c]][["exPostEstimation"]] <- exPostEstimation[[delta_c]]
-        } 
+        }
     }
     ## Get Optima of via BIC, BIC_sqHat, GCV
     optimum         <- which.min(sapply(res, function(x) x$BIC))
@@ -193,7 +251,7 @@ function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom = range(grd) ,
             bic_sq = optEntry$edfsAndBIC$BIC_sqHat,
             hat_matrix = hat_matrix,
             center = center),
-        kSeqEst= res
+        kSeqEst = res
         )
     estObj
 }
