@@ -32,7 +32,7 @@ function(Y, X_mat, add.vars, N, p, potPoI, searchMethod, rho_rng, A_m, X_B, grd,
     
     ## Estimates of S_choice PoI Beta_j, j = 1, ..., S and beta(t)
     if( S_choice != 0 ){ # If there are PoI
-        estPoI   <- allEstimates$estAlpha[(p+1):(p+S_choice)]
+        estPoI   <- allEstimates$estAlpha[p+which(potPoI %in% PoIChoice)]
         
         ## in case of additional variables:
         if (!is.null(add.vars)){
@@ -66,7 +66,7 @@ function(Y, X_mat, add.vars, N, p, potPoI, searchMethod, rho_rng, A_m, X_B, grd,
          betaAddVar = add.var.coef,
          gcv        = allEstimates[["gcv"]],
          edfsAndBIC = edfsAndBIC,
-         XtX_1Xt     = allEstimates$XtX1Xt,
+         XtX_1Xt     = allEstimates$XtX1Xt[c(1:p, p+which(potPoI %in% PoIChoice)),],
          rho        = allEstimates$rho, 
          selS       = length(PoIChoice), 
          Y_hat      = Y_hat_c, 
