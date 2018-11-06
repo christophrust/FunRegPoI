@@ -116,7 +116,8 @@
 #' @keywords datagen
 #'
 #' @export
-FunRegPoISim <- function(N, grd, DGP = c("Easy", "Complicated", "NoPoI", "OnlyPoI"), error_sd = 0.125 , mean_X = 0 , sd_X = 1) {
+FunRegPoISim <- function(N, grd, DGP = c("Easy", "Complicated", "NoPoI", "OnlyPoI", "EasyHighNoise"),
+                         error_sd = if (identical(DGP, "EasyHighNoise")) 0.5 else 0.125, mean_X = 0 , sd_X = 1) {
     
     ## grd params and deviance
     p        <- length(grd)
@@ -128,6 +129,7 @@ FunRegPoISim <- function(N, grd, DGP = c("Easy", "Complicated", "NoPoI", "OnlyPo
     sd_X     <- 1    	        # Sd of functional X 
 
     ## set the PoI-parameters (tau, PoI-coefs , beta function)
+    if (identical(DGP, "EasyHighNoise")) DGP <- "Easy"
     PoIDGP     <- setPoIDGP(DGP)
     beta_fun   <- function(t){ eval(parse(text=PoIDGP$fct_text))}
     beta_fun_grd <- beta_fun(t=grd)
