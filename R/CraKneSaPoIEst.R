@@ -97,7 +97,7 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                                                            rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                            nbest = nbest, intercept = intercept, plotting = FALSE)
                         if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
-                            ## then additional ES step has nothing changed
+                            ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
                         nStepsES <- nStepsES + 1
@@ -116,7 +116,7 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                                                            rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                            nbest = nbest, intercept = intercept, plotting = FALSE)
                         if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
-                            ## then additional ES step has nothing changed
+                            ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
                         nStepsES <- nStepsES + 1
@@ -137,7 +137,7 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                                                   rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                   nbest = nbest, intercept = intercept, plotting = FALSE)
                         if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
-                            ## then additional ES step has nothing changed
+                            ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
                         nStepsES <- nStepsES + 1
@@ -155,7 +155,7 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                                                   rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                   nbest = nbest, intercept = intercept, plotting = FALSE)
                         if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
-                            ## then additional ES step has nothing changed
+                            ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
                         nStepsES <- nStepsES + 1

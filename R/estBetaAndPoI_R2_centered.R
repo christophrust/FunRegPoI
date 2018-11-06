@@ -1,6 +1,7 @@
 estBetaAndPoI_R2_centered <-
 function(Y, X_mat, add.vars, N, p, potPoI, searchMethod, rho_rng, A_m, X_B, grd, 
-         maxPoI = 10, nbest = nbest, intercept = intercept, plotting = plotting){
+         maxPoI = 10, nbest = nbest, intercept = intercept, plotting = plotting,
+         scaleSearchPoI = TRUE){
     ## #####################################################################################
     ## Function performing the R2-estimate 
     
@@ -15,7 +16,11 @@ function(Y, X_mat, add.vars, N, p, potPoI, searchMethod, rho_rng, A_m, X_B, grd,
     Y_woBeta_st  <- scale( Y_c - ((t(X_c) %*%  allEstimates$estBeta) / p) )
     
     ## Calculate the standardized X_i(potPoI_j) to Sub-Select PoIs from 
-    PoIXValues   <- scale(t(X_mat))[ , potPoI , drop = F]
+    PoIXValues <- if (scaleSearchPoI) {
+                      scale(t(X_mat))[ , potPoI , drop = FALSE]
+                  } else {
+                      t(X_mat)[ , potPoI , drop = FALSE]
+                  }
     
     ## Choose from Y- int X(t) beta(t) the final PoIChoice
     PoIChoice    <- if (searchMethod == "dirSearch"){

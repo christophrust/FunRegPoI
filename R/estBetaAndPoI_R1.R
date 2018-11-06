@@ -1,11 +1,16 @@
 estBetaAndPoI_R1 <-
 function(Y, X_mat, add.vars, N, p, potPoI, searchMethod, rho_rng, A_m, X_B, grd, 
-         maxPoI = 10, nbest = nbest, intercept = intercept, plotting = plotting){
+         maxPoI = 10, nbest = nbest, intercept = intercept, plotting = plotting,
+         scaleSearchPoI = TRUE){
     ## #####################################################################################
     ## Function performing the R1-estimate 
     
     ## Calculate X_i(potPoI_j)
-    PoIXValues <- scale(t(X_mat))[ , potPoI , drop = FALSE]
+    PoIXValues <- if (scaleSearchPoI) {
+                      scale(t(X_mat))[ , potPoI , drop = FALSE]
+                  } else {
+                      t(X_mat)[ , potPoI , drop = FALSE]
+                  }
     
     ## Choose from potPoI the PoIChoice searchMethod <- "dirSearch" searchMethod <- "fullSearch"
     PoIChoice  <- if (searchMethod =="dirSearch"){
