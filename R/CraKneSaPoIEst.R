@@ -96,7 +96,9 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                         entry <- estBetaAndPoI_R1_centered(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
                                                            rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                            nbest = nbest, intercept = intercept, plotting = FALSE)
-                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                        if ((is.null(CurSetPotPoI) && is.null(entry[["estTauGrd"]])) ||
+                            (!is.null(CurSetPotPoI) && !is.null(entry[["estTauGrd"]]) &&
+                             identical(sort(CurSetPotPoI),sort(entry[["estTauGrd"]])))) {
                             ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
@@ -115,7 +117,9 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                         entry <- estBetaAndPoI_R2_centered(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
                                                            rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                            nbest = nbest, intercept = intercept, plotting = FALSE)
-                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                        if ((is.null(CurSetPotPoI) && is.null(entry[["estTauGrd"]])) ||
+                            (!is.null(CurSetPotPoI) && !is.null(entry[["estTauGrd"]]) &&
+                             identical(sort(CurSetPotPoI),sort(entry[["estTauGrd"]])))) {
                             ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
@@ -136,7 +140,9 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                         entry <- estBetaAndPoI_R1(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
                                                   rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                   nbest = nbest, intercept = intercept, plotting = FALSE)
-                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                        if ((is.null(CurSetPotPoI) && is.null(entry[["estTauGrd"]])) ||
+                            (!is.null(CurSetPotPoI) && !is.null(entry[["estTauGrd"]]) &&
+                             identical(sort(CurSetPotPoI),sort(entry[["estTauGrd"]])))) {
                             ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
@@ -154,7 +160,9 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                         entry <- estBetaAndPoI_R2(Y=Y, X_mat=X_mat, add.vars = add.vars, N=N, p=p, potPoI=entry[["estTauGrd"]], searchMethod=searchMethod, 
                                                   rho_rng = rho_rng, A_m=A_m, X_B = X_B, grd=grd, maxPoI = maxPoI, 
                                                   nbest = nbest, intercept = intercept, plotting = FALSE)
-                        if (identical(sort(CurSetPotPoI), sort(entry[["estTauGrd"]]) ) ) {
+                        if ((is.null(CurSetPotPoI) && is.null(entry[["estTauGrd"]])) ||
+                            (!is.null(CurSetPotPoI) && !is.null(entry[["estTauGrd"]]) &&
+                             identical(sort(CurSetPotPoI),sort(entry[["estTauGrd"]])))) {
                             ## then additional ES step has not changed the PoI Selection
                             return(entry)
                         }
