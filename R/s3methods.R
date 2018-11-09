@@ -113,15 +113,21 @@ summary.FunRegPoI <- function(object, confidence.level = 0.95,...){
         } else {
             obj <- c(obj , list(coefficients = NULL))
         }
-                
-    
-
+        
+        
+        
         ## beta curve confidence interval
-        q.norm <-  pnorm(1-(1- confidence.level)/2 )
+        
+        q.norm <-  pnorm(1 - (1- confidence.level)/2 )
         confint.beta <- cbind(lower = estBeta - q.norm * coef.serr.ptw[1:length(estBeta)],
-                          upper = estBeta + q.norm * coef.serr.ptw[1:length(estBeta)])
+                              upper = estBeta + q.norm * coef.serr.ptw[1:length(estBeta)])
 
-        obj <- c(obj , list( confint.beta = confint.beta))
+        alpha.bf <- (1- confidence.level)/length(estBeta)
+        q.norm.bf <-  pnorm(1-alpha.bf/2 )
+        confint.beta.bf <- cbind(lower = estBeta - q.norm.bf * coef.serr.ptw[1:length(estBeta)],
+                                 upper = estBeta + q.norm.bf * coef.serr.ptw[1:length(estBeta)])
+        
+        obj <- c(obj , list( confint.beta = list(classic = confint.beta, bonferroni = confint.beta.bf)))
         
     } else {
         obj <- c(obj , list(betaPoI = betaPoI,
@@ -187,7 +193,7 @@ print.summary.FunRegPoI <-function(x , signif.stars = TRUE,digits = 3,...){
 
 
 #' @export
-plot.summary.FunRegPoI <-function(x,...){
+plot.summary.FunRegPoI <-function(x,bonferroni = TRUE,...){
     
     if (x$call != "KPS"){
         beta.rng  <-range(x$confint.beta) + diff(range(x$confint.beta)) * c(-0.2,+0.2)
@@ -207,7 +213,9 @@ plot.summary.FunRegPoI <-function(x,...){
     ## plot the pointwise confidence interval:
     if (x$call != "KPS"){
         grd <- seq(0,1, len = length(estBeta))
-        y.ci <- c( x$confint.beta[,"lower"], x$confint.beta[length(estBeta):1,"upper"])
+        
+        lwAndUp <-  if (bonferroni) x$confint.beta$bonferroni else x$confint.beta$classic
+        y.ci <- c( lwAndUp[,"lower"], lwAndUp[length(estBeta):1,"upper"])
         x.ci <- c(grd, grd[length(estBeta):1])
         polygon(x = x.ci, y = y.ci, col = "lightgrey", border = NA)
     }
