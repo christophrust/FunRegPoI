@@ -29,9 +29,12 @@ function(Y, X_mat, add.vars, A_m, X_B, PoI = NULL, rho_rng = c(1e-6,2e2) , ...){
        
     ## Use faster Cholesky inversion since NPXTX + x *  A_m_poi is symmetric for all x
     optGCVviaRho     <- function(x) {
-        H <- 1/(N*p) * X %*% chol2inv(chol(NPXTX + x *  A_m_poi )) %*% t( X ) # dim(H) N x N
+        ##H <- 1/(N*p) * X %*% chol2inv(chol(NPXTX + x *  A_m_poi )) %*% t( X ) # dim(H) N x N
+        H <- 1/(N*p) * tcrossprod( X %*% backsolve(chol(NPXTX + x *  A_m_poi ), diag(1,ncol(A_m_poi))) )
         return((1/N *  sum ( (Y - H %*% Y)^2 ))/ (( 1 - sum( diag(H)) / N)^2 ))
     }
+
+
     
     optRhoGivenPoI   <- optim(1e-3, optGCVviaRho, method = "Brent", lower = range(rho_rng)[1], upper = range(rho_rng)[2])
     

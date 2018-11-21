@@ -8,7 +8,8 @@ function( X, X_B, Y, A_m_poi, rho, N , p) {
     ## Beta(t): Projection of alpha_hat onto Spline Basis
     ## P(P^T P)^-1 P^T alpha_hat
     ##beta_hat   <- X_B %*% solve( t(X_B) %*% X_B) %*% t(X_B) %*% alpha_hat[1:p]
-    beta_hat   <- X_B %*% chol2inv( chol( crossprod(X_B, X_B) )) %*% t(X_B) %*% alpha_hat[1:p]
+    ##beta_hat   <- X_B %*% chol2inv( chol( crossprod(X_B, X_B) )) %*% t(X_B) %*% alpha_hat[1:p]
+    beta_hat   <- tcrossprod( X_B %*% backsolve(chol(crossprod(X_B, X_B)), diag(1,ncol(X_B))) ) %*% alpha_hat[1:p]
     
     list(estBeta=beta_hat, XtX1Xt = XtX_1Xt, estAlpha = alpha_hat)
 }
