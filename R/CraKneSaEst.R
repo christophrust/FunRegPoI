@@ -31,6 +31,10 @@ function(Y, X_mat, add.vars, A_m, X_B, rho_rng = c(1e-6,2e2) , center = TRUE , .
             }
     }
     
+    edfsAndBIC <- calPoIBIC( X = t(X_mat), XtX_1Xt = betaEstimates$XtX1Xt, Y, Y_hat,
+                            rho = betaEstimates$rho, S = length(betaEstimates$betaAddVar), p=length(betaEstimates$estBeta)) 
+
+    
     estObj <- list(
         coefficients = list(
             betaCurve = as.vector(betaEstimates$estBeta) ,
@@ -50,10 +54,10 @@ function(Y, X_mat, add.vars, A_m, X_B, rho_rng = c(1e-6,2e2) , center = TRUE , .
             rho_rng = range(rho_rng) ,
             gcv = betaEstimates[["gcv"]] ,
             cor = NULL,
-            eff_df = NULL,
-            bic = NULL,
+            eff_df = edfsAndBIC$eff_df,
+            bic = edfsAndBIC$BIC,
             XtX_1Xt = betaEstimates$XtX1Xt,
-            bic_sq= NULL,
+            bic_sq= edfsAndBIC$BIC_sqHat,
             hat_matrix= NULL,
             center = center),
         kSeqRes = NULL
