@@ -1,6 +1,6 @@
 KnePosSarEstimation <-
 function(Y, X_mat, grd, add.vars, maxPoI = 8 ,threshold_cpv=0.95, estOrder = NULL, searchMethod = "dirSearch" ,
-         k_seq = 1:floor(length(grd)/6) , maxK = 40, exPost = FALSE, ...){
+         k_seq = 1:floor(length(grd)/6) , maxK = 40, exPost = FALSE, scaleSearchPoI = TRUE,...){
     ## Function calculating the eigenfunction-based estimate of FunRegPoI. If estOrder ==NULL, the standard
     ## KPS-Estimation is done, in this case, exPost has no effect
     ##
@@ -30,8 +30,8 @@ function(Y, X_mat, grd, add.vars, maxPoI = 8 ,threshold_cpv=0.95, estOrder = NUL
         
     } else {
         
-        Y_st   <- scale(Y)
-        X_st  <- t(scale(t(X_mat)))  # dim(X_st)
+        Y_st   <- if (scaleSearchPoI) scale(Y) else Y - mean(Y)
+        X_st  <- if (scaleSearchPoI) t(scale(t(X_mat))) else   t(scale(t(X_mat), scale = FALSE)) # dim(X_st)
         possible_deltas  <- ind2grd(k_seq, grd)
 
         ## get empirical eigenfunctions:
