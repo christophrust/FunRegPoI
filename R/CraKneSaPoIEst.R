@@ -2,7 +2,7 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
                            k_seq = 1:floor(length(grd)/6), rho_rng = c(1e-6,2e2),
                            estOrder = "R2" , searchMethod = "dirSearch" , nbest=1 ,
                            intercept =FALSE , opt.crit = "BIC_sqHat", exPost = TRUE,
-                           maxStepsES = 3, center = TRUE , ...) {
+                           maxStepsES = 3, center = TRUE ,scaleSearchPoI = TRUE, ...) {
     
     ## ###########################################
     ## A Function caluclating the PESES estimator
@@ -29,10 +29,10 @@ CraKneSaPoIEst <- function(Y , X_mat , grd , add.vars, A_m, X_B, maxPoI=8, dom =
     N    <- length(Y)
     p    <- length(grd)
     ## Standardize and center y and X
-    Y_st   <- scale(Y)
+    Y_st   <- if (scaleSearchPoI) scale(Y) else Y - mean(Y)
     
     ## X_st              <- scale(X_mat)  # dim(X_st)
-    X_st  <- t(scale(t(X_mat)))  # dim(X_st)
+    X_st  <- if (scaleSearchPoI) t(scale(t(X_mat)))  else t(scale(t(X_mat), scale = FALSE)) # dim(X_st) 
     
     
     possible_deltas  <- ind2grd(k_seq, grd)
