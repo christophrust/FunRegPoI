@@ -77,9 +77,9 @@ summary.FunRegPoI <- function(object, confidence.level = 0.95,...){
     BIC <- object$model$bic
     eff.df <- object$model$eff_df
     call <- object$call
-    betaPoI <- object$betaPoI
-    betaAddVar <- object$betaAddVar
-    selS <- object$selS
+    betaPoI <- coefs$betaPoI
+    betaAddVar <- coefs$betaAddVar
+    selS <- coefs$selS
 
     obj <- list(estBeta = estBeta,
                 taus = taus,
@@ -203,7 +203,7 @@ plot.summary.FunRegPoI <-function(x,bonferroni = TRUE,...){
     }
     taus <- x$taus
     if (length(taus)>0) {
-        PoIcoefs <- x$coefficients[1:length(taus),1]
+        PoIcoefs <- if (x$call != "KPS") x$coefficients[1:length(taus),1] else x$betaPoI
     }
     ylims <- range(estBeta) + diff(range(estBeta)) * c(-0.2,+0.2)
     
