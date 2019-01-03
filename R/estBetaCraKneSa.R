@@ -1,5 +1,5 @@
 estBetaCraKneSa <-
-function(Y, X_mat, add.vars, A_m, X_B, PoI = NULL, rho_rng = c(1e-6,2e2) , ...){
+function(Y, X_mat, add.vars, A_m, X_B, PoI = NULL, rho_rng = c(1e-6,2e2) , rho=NULL,...){
 
     ## ########################
     ## A Function estimating the beta(t)-Curve for a functional linear regression model
@@ -23,23 +23,28 @@ function(Y, X_mat, add.vars, A_m, X_B, PoI = NULL, rho_rng = c(1e-6,2e2) , ...){
     Mat     <- CraKneSaSplineMatrices(X_mat=X_mat, PoI= PoI, add.vars = add.vars, A_m=A_m, p=p)
     X       <- Mat[["X"]]
     A_m_poi <- Mat[["A_m_poi"]] # dim(A_m)
-    
-    ## NPXTX   <- 1/(N*p) * t( X) %*%  X
-    NPXTX   <- 1/(N*p) * crossprod( X , X)
-       
-    ## Use faster Cholesky inversion since NPXTX + x *  A_m_poi is symmetric for all x
-    optGCVviaRho     <- function(x) {
-        ##H <- 1/(N*p) * X %*% chol2inv(chol(NPXTX + x *  A_m_poi )) %*% t( X ) # dim(H) N x N
-        H <- 1/(N*p) * tcrossprod( X %*% backsolve(chol(NPXTX + x *  A_m_poi ), diag(1,ncol(A_m_poi))) )
-        return((1/N *  sum ( (Y - H %*% Y)^2 ))/ (( 1 - sum( diag(H)) / N)^2 ))
+
+    if (is.null(rho)){
+        ## NPXTX   <- 1/(N*p) * t( X) %*%  X
+        NPXTX   <- 1/(N*p) * crossprod( X , X)
+        
+        ## Use faster Cholesky inversion since NPXTX + x *  A_m_poi is symmetric for all x
+        optGCVviaRho     <- function(x) {
+            ##H <- 1/(N*p) * X %*% chol2inv(chol(NPXTX + x *  A_m_poi )) %*% t( X ) # dim(H) N x N
+            H <- 1/(N*p) * tcrossprod( X %*% backsolve(chol(NPXTX + x *  A_m_poi ), diag(1,ncol(A_m_poi))) )
+            return((1/N *  sum ( (Y - H %*% Y)^2 ))/ (( 1 - sum( diag(H)) / N)^2 ))
+        }
+        
+        
+        
+        optRhoGivenPoI   <- optim(1e-3, optGCVviaRho, method = "Brent", lower = range(rho_rng)[1], upper = range(rho_rng)[2])
+        
+        ## Extract optimal rho
+        rho <- optRhoGivenPoI$par
+        gcv <- optRhoGivenPoI$value
+    } else {
+        gcv <- NULL
     }
-
-
-    
-    optRhoGivenPoI   <- optim(1e-3, optGCVviaRho, method = "Brent", lower = range(rho_rng)[1], upper = range(rho_rng)[2])
-    
-    ## Extract optimal rho
-    rho              <- optRhoGivenPoI$par
     
     ## Complete estimator
     ## Alpha Estimation (alpha = discretized version of beta(t) + PoI coefficients (last rows)
@@ -50,7 +55,7 @@ function(Y, X_mat, add.vars, A_m, X_B, PoI = NULL, rho_rng = c(1e-6,2e2) , ...){
     ## 2. b. Generate corresponding matrices
     betaEstimates          <- projEstimatorMatrix( X = X, X_B, Y, A_m_poi = A_m_poi, rho, N , p)
     betaEstimates[["rho"]] <- rho
-    betaEstimates[["gcv"]] <- optRhoGivenPoI$value
+    betaEstimates[["gcv"]] <- gcv
 
     betaEstimates
 }

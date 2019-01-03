@@ -1,5 +1,5 @@
 CraKneSaEst <-
-function(Y, X_mat, add.vars, A_m, X_B, rho_rng = c(1e-6,2e2) , center = TRUE , ...){
+function(Y, X_mat, add.vars, A_m, X_B, rho_rng = c(1e-6,2e2) , rho = NULL, center = TRUE , ...){
     ## wrapper around estBetaCraKneSa
 
     
@@ -8,28 +8,32 @@ function(Y, X_mat, add.vars, A_m, X_B, rho_rng = c(1e-6,2e2) , center = TRUE , .
         Y_c   <- scale(Y, scale = FALSE)
         X_c   <- t(scale(t(X_mat), scale = FALSE)) # matplot(x = grd, y = X_c, type = "l"); dim(X_c); dim(X_mat)
         
-        betaEstimates  <- estBetaCraKneSa(Y = Y_c, X_mat = X_c, add.vars = add.vars, A_m = A_m, X_B = X_B, rho_rng = rho_rng, PoI = NULL , ...)
+        betaEstimates  <- estBetaCraKneSa(Y = Y_c, X_mat = X_c, add.vars = add.vars, A_m = A_m, X_B = X_B, rho_rng = rho_rng, rho = rho, PoI = NULL , ...)
         
     } else{
-        betaEstimates   <- estBetaCraKneSa(Y, X_mat, add.vars = add.vars, A_m = A_m, X_B = X_B, PoI = NULL, rho_rng = rho_rng, ...)
+        betaEstimates   <- estBetaCraKneSa(Y, X_mat, add.vars = add.vars, A_m = A_m, X_B = X_B, PoI = NULL, rho_rng = rho_rng,rho = rho, ...)
     }
-    
-    ## fitted and residual
-    Y_hat <- if (center){
-                 as.vector( (t(X_c) %*% betaEstimates$estBeta)/length(betaEstimates$estBeta) )
-             } else{
-                 as.vector( (t(X_mat) %*% betaEstimates$estBeta)/length(betaEstimates$estBeta) )
-             }
     
 
     if (!is.null(add.vars)){
-        names(betaEstimates$betaAddVar) <-
-            if (!is.null(names(add.vars))) {
+        betaAddVar <- betaEstimates$estAlpha[ (p+1):(p+ncol(add.vars)) ]
+        names(betaAddVar) <-
+            if (!is.null(colnames(add.vars))) {
                 colnames(add.vars)
             } else {
-                paste0("add.var", 1:col(add.vars))
+                paste0("add.var", 1:ncol(add.vars))
             }
-    }
+    } else betaAddVar <- NULL
+
+    ## fitted and residual
+    Y_hat <- if (center){
+                 as.vector( (t(X_c) %*% betaEstimates$estBeta)/length(betaEstimates$estBeta) ) +
+                     if (!is.null(add.vars)) add.vars %*% betaAddVar else 0
+             } else{
+                 as.vector( (t(X_mat) %*% betaEstimates$estBeta)/length(betaEstimates$estBeta) ) +
+                     if (!is.null(add.vars)) add.vars %*% betaAddVar else 0
+             }
+    
     
     edfsAndBIC <- calPoIBIC( X = t(X_mat), XtX_1Xt = betaEstimates$XtX1Xt, Y, Y_hat,
                             rho = betaEstimates$rho, S = length(betaEstimates$betaAddVar), p=length(betaEstimates$estBeta)) 
@@ -39,7 +43,7 @@ function(Y, X_mat, add.vars, A_m, X_B, rho_rng = c(1e-6,2e2) , center = TRUE , .
         coefficients = list(
             betaCurve = as.vector(betaEstimates$estBeta) ,
             betaPoI = NULL ,
-            betaAddVar = betaEstimates$betaAddVar,
+            betaAddVar = betaAddVar,
             tauGrd = NULL ,
             tauInd = NULL,
             selS = 0 ),
