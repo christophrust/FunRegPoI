@@ -181,6 +181,13 @@ FunRegPoI <-
     if (abs(diff(range(diff(grd)))) > 1e-10)
       stop("'grd' does not appear to be a regularly spaced grid!")
 
+    ## if grid does not span 0-1, we scale X_mat accordingly
+    if (abs(grd[1] - 1 / (2 * length(grd))) > 1e-10 ||
+        abs(grd[length(grd)] + 1 / (2 * length(grd)) - 1) > 1e-10) {
+
+      grid_scale <- (grd[length(grd)] - grd[1]) * (1 + 1 / length(grd))
+      X_mat <- grid_scale * X_mat
+    }
 
     ## check which estimator
     if (estimator == "PESES") {
