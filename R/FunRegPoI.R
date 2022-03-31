@@ -155,40 +155,43 @@
 #' 
 #' @export
 FunRegPoI <-
-function(Y , X_mat , grd, add.vars = NULL , estimator = c("PESES","KPS" , "CKS") , maxPoI= 8 , A_m , X_B  , ...)
+  function(Y, X_mat, grd, add.vars = NULL,
+           estimator = c("PESES", "KPS", "CKS"), maxPoI= 8, A_m, X_B, ...) {
 ### Functional Linear Regression with Points of Impact
 ### wrapper around different estimators: PESES, KPS , CKS
 ###
-### returns object of S3-class FunRegPoI, with methods plot and summary   
-{
+### returns object of S3-class FunRegPoI, with methods plot and summary
+
     if (missing(estimator)) estimator <- "PESES"
     ## natural cubic splines basis and squared second derivatives if not provided
-    if (estimator %in% c("PESES" , "CKS") && ( missing(A_m) | missing(X_B) ) ){
-        NaturalSplines <- calSecDerNatSpline(grd)
-        A_m            <- NaturalSplines[["A_m"]]
-        X_B            <- NaturalSplines[["X_B"]]
+    if (estimator %in% c("PESES", "CKS") && (missing(A_m) | missing(X_B))) {
+      NaturalSplines <- calSecDerNatSpline(grd)
+      A_m            <- NaturalSplines[["A_m"]]
+      X_B            <- NaturalSplines[["X_B"]]
     }
 
     Y <- as.vector(Y)
-    
+
     ## check for correct input
     if (!is.matrix(X_mat)) stop("'X_mat' has to be a matrix!")
-    if (!is.null(add.vars) && !is.matrix(add.vars) && !is.vector(add.vars)) stop("'add.vars' has to be a matrix or vector!")
-    if (length(Y) != dim(X_mat)[2]) stop("dimension of 'X_mat' and length of 'Y' don't match!")
-    
-    
+    if (!is.null(add.vars) && !is.matrix(add.vars) && !is.vector(add.vars))
+      stop("'add.vars' has to be a matrix or vector!")
+    if (length(Y) != dim(X_mat)[2])
+      stop("dimension of 'X_mat' and length of 'Y' don't match!")
+
+
     ## check which estimator
-    if (estimator=="PESES"){
-        ## Apply the PESES-Estimator
-        estObj <- CraKneSaPoIEst(Y, X_mat, grd, add.vars, A_m, X_B , maxPoI ,...)
-        ##
-    } else if (estimator =="KPS"){
-        estObj <- KnePosSarEstimation(Y, X_mat, grd, add.vars, maxPoI ,...)
-    } else if (estimator =="CKS"){
-        estObj <- CraKneSaEst(Y, X_mat, add.vars, A_m, X_B , ...)
-    } else{
-        stop(sprintf("Estimator %s not supported" , estimator))
+    if (estimator == "PESES") {
+      ## Apply the PESES-Estimator
+      estObj <- CraKneSaPoIEst(Y, X_mat, grd, add.vars, A_m, X_B, maxPoI, ...)
+      ##
+    } else if (estimator == "KPS") {
+      estObj <- KnePosSarEstimation(Y, X_mat, grd, add.vars, maxPoI, ...)
+    } else if (estimator == "CKS") {
+      estObj <- CraKneSaEst(Y, X_mat, add.vars, A_m, X_B, ...)
+    } else {
+      stop(sprintf("Estimator %s not supported", estimator))
     }
     class(estObj) <- "FunRegPoI"
     estObj
-}
+  }
