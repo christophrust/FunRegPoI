@@ -178,6 +178,8 @@ FunRegPoI <-
       stop("'add.vars' has to be a matrix or vector!")
     if (length(Y) != dim(X_mat)[2])
       stop("dimension of 'X_mat' and length of 'Y' don't match!")
+    if (abs(diff(range(diff(grd)))) > 1e-10)
+      stop("'grd' does not appear to be a regularly spaced grid!")
 
 
     ## check which estimator
