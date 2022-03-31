@@ -98,8 +98,8 @@ summary.FunRegPoI <- function(object, confidence.level = 0.95,...){
         coef.serr.ptw  <- sqrt(diag(tcrossprod(XtX1_Xt)) * s2.resid )
     } else {
         s2.resid <- sum(object$residuals^2)/( length(object$residuals) - eff.df )
-        Xtau <- t(object$data$X_mat[ coefs$tauInd,] -
-                  rowMeans(object$data$X_mat[ coefs$tauInd,]))  
+        Xtau <- t(object$data$X_mat[ coefs$tauInd, , drop = FALSE] -
+                  rowMeans(object$data$X_mat[ coefs$tauInd, , drop = FALSE]))
         Xi <- obj$model$estScores[,1:obj$model$K, drop = FALSE]
         Lambda <- if (is.matrix(efs <- obj$model$estEigenFct))
                       obj$model$estEigenFct else matrix(efs, ncol = 1)
